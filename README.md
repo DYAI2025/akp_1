@@ -1,20 +1,41 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# AKP Architekten Kauschke + Partner
 
-# Run and deploy your AI Studio app
+Single-page React/Vite portfolio for AKP Architekten Kauschke + Partner. The app is built as static assets and served by a small Express server that is ready for Railway deployments.
 
-This contains everything you need to run your app locally.
+## Requirements
 
-View your app in AI Studio: https://ai.studio/apps/7ba924e4-6332-4969-8813-c9f9db82142e
+- Node.js 22+
+- npm
 
-## Run Locally
+## Local development
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+The Vite development server listens on `0.0.0.0:3000`.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Quality checks
+
+```bash
+npm run lint
+npm test
+npm run build
+npm run smoke:server
+```
+
+`npm run smoke:server` expects a built `dist/` directory and verifies the production server, the `/healthz` endpoint, and SPA fallback routing.
+
+## Railway deployment
+
+The repository includes `railway.json` with a Nixpacks build and a `/healthz` deployment health check.
+
+Railway will run:
+
+```bash
+npm ci && npm run build
+npm run start
+```
+
+The production server reads Railway's `PORT` environment variable automatically and falls back to `3000` locally.

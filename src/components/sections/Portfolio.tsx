@@ -4,33 +4,37 @@ import { motion, AnimatePresence } from 'motion/react';
 
 type Project = typeof content.projects[0];
 
+function getProjectImage(project: Project) {
+  return 'image' in project && typeof project.image === 'string' ? project.image : undefined;
+}
+
 export default function Portfolio() {
   const [activeFilter, setActiveFilter] = useState("Alle");
 
   // Extract all unique filters
   const allFilters = ["Alle", ...Array.from(new Set(content.projects.flatMap(p => p.category)))];
 
-  const filteredProjects = activeFilter === "Alle" 
-    ? content.projects 
+  const filteredProjects = activeFilter === "Alle"
+    ? content.projects
     : content.projects.filter(p => p.category.includes(activeFilter));
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   return (
     <section id="projekte" className="py-24 max-w-[1600px] mx-auto border-t border-black/10">
-      
+
       {/* Header & Filters */}
       <div className="px-8 md:px-12 xl:px-16 mb-16 space-y-12">
         <h2 className="font-serif text-3xl md:text-5xl leading-tight tracking-tight">Archiv / Projekte</h2>
-        
+
         <div className="flex flex-wrap gap-2">
           {allFilters.map(filter => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`font-sans text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all border ${
-                activeFilter === filter 
-                  ? 'bg-ink text-paper border-ink' 
+                activeFilter === filter
+                  ? 'bg-ink text-paper border-ink'
                   : 'border-black/20 hover:bg-black/5 text-ink'
               }`}
               data-cursor="Filtern"
@@ -46,6 +50,7 @@ export default function Portfolio() {
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((project, index) => {
             const isFeatured = index % 5 === 0 && activeFilter === "Alle";
+            const projectImage = getProjectImage(project);
             return (
               <motion.div
                 layout
@@ -64,11 +69,11 @@ export default function Portfolio() {
                 <div className={`w-full relative bg-[#EBEBEB] overflow-hidden mb-4 ${
                   isFeatured ? 'aspect-[4/3] md:aspect-[3/2]' : 'aspect-square md:aspect-[4/5]'
                 }`}>
-                  {project.image ? (
-                    <img 
-                      src={project.image} 
-                      alt={project.title} 
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                  {projectImage ? (
+                    <img
+                      src={projectImage}
+                      alt={project.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       onError={(e) => {
                         // Fallback to placeholder if image fails to load
                         e.currentTarget.style.display = 'none';
@@ -76,9 +81,9 @@ export default function Portfolio() {
                       }}
                     />
                   ) : null}
-                  <div className={`absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:10px_10px] group-hover:scale-105 transition-transform duration-700 ease-out ${project.image ? 'hidden' : ''}`}></div>
+                  <div className={`absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:10px_10px] group-hover:scale-105 transition-transform duration-700 ease-out ${projectImage ? 'hidden' : ''}`}></div>
                   <div className="absolute inset-0 border border-black/5 pointer-events-none"></div>
-                  <div className={`absolute bottom-4 left-4 font-mono text-[8px] z-10 uppercase ${project.image ? 'text-white mix-blend-difference' : 'text-ink/30'}`}>
+                  <div className={`absolute bottom-4 left-4 font-mono text-[8px] z-10 uppercase ${projectImage ? 'text-white mix-blend-difference' : 'text-ink/30'}`}>
                     Ref. / {index.toString().padStart(2, '0')}
                   </div>
                 </div>
@@ -91,11 +96,11 @@ export default function Portfolio() {
                   <h3 className="font-serif text-xl md:text-2xl leading-tight group-hover:text-ink/70 transition-colors mb-3">
                     {project.title}
                   </h3>
-                  
+
                   <p className="font-sans text-sm text-ink/60 leading-relaxed max-w-lg mb-6 line-clamp-3">
                     {project.desc}
                   </p>
-                  
+
                   <div className="mt-auto flex gap-2 items-center pt-4 border-t border-black/10">
                      <span className="font-sans text-[9px] uppercase tracking-widest flex items-center justify-between w-full text-ink/40">
                        <span className="truncate pr-4">{project.category.join(', ')}</span>
@@ -112,7 +117,7 @@ export default function Portfolio() {
        {/* Overlay / Drawer (Simple modal approach) */}
        <AnimatePresence>
          {selectedProject && (
-           <motion.div 
+           <motion.div
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              exit={{ opacity: 0 }}
@@ -128,7 +133,7 @@ export default function Portfolio() {
                 onClick={e => e.stopPropagation()}
               >
                 <div className="p-8 md:p-12 relative">
-                  <button 
+                  <button
                     onClick={() => setSelectedProject(null)}
                     className="absolute top-8 right-8 font-sans text-xs uppercase tracking-widest"
                   >
@@ -139,12 +144,12 @@ export default function Portfolio() {
                      <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-8">{selectedProject.title}</h2>
                      <p className="font-sans text-lg text-ink/80 leading-relaxed mb-12">{selectedProject.desc}</p>
 
-                     {selectedProject.image ? (
+                     {getProjectImage(selectedProject) ? (
                        <div className="w-full relative aspect-[16/9] mb-12 bg-gray-100 overflow-hidden">
-                         <img 
-                           src={selectedProject.image} 
-                           alt={selectedProject.title} 
-                           className="absolute inset-0 w-full h-full object-cover" 
+                         <img
+                           src={getProjectImage(selectedProject)}
+                           alt={selectedProject.title}
+                           className="absolute inset-0 w-full h-full object-cover"
                            onError={(e) => {
                              e.currentTarget.style.display = 'none';
                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
@@ -159,7 +164,7 @@ export default function Portfolio() {
                           <span className="font-sans text-[10px] uppercase tracking-widest text-ink/30 text-center">Projektbild Platzhalter<br/>Detailansicht</span>
                        </div>
                      )}
-                     
+
                      <div className="grid grid-cols-2 gap-8 pt-8 hairline-t">
                         <div>
                           <h4 className="font-sans text-[10px] uppercase tracking-widest text-ink/50 mb-2">Kategorien</h4>

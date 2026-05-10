@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 
 export default function Cursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [label, setLabel] = useState<string | null>(null);
+  const [canUseCustomCursor, setCanUseCustomCursor] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -25,14 +26,22 @@ export default function Cursor() {
 
   // Hide cursor on touch devices using a CSS class on body instead
   useEffect(() => {
-    const isTouch = window.matchMedia('(pointer: coarse)').matches;
-    if (!isTouch) {
-      document.body.classList.add('custom-cursor');
-    }
-    return () => document.body.classList.remove('custom-cursor');
+    const mediaQuery = window.matchMedia('(pointer: fine)');
+    const updateCursorSupport = () => {
+      setCanUseCustomCursor(mediaQuery.matches);
+      document.body.classList.toggle('custom-cursor', mediaQuery.matches);
+    };
+
+    updateCursorSupport();
+    mediaQuery.addEventListener('change', updateCursorSupport);
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateCursorSupport);
+      document.body.classList.remove('custom-cursor');
+    };
   }, []);
 
-  if (window.matchMedia('(pointer: coarse)').matches) return null;
+  if (!canUseCustomCursor) return null;
 
   return (
     <motion.div

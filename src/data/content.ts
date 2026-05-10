@@ -48,28 +48,24 @@ export const content = {
       location: "Berlin-Charlottenburg",
       category: ["Wohnen", "Neubau", "Berlin"],
       desc: "Innerstädtischer Neubau mit hohem architektonischen Anspruch an die Lückenschließung.",
-      image: "/big2284.jpg"
     },
     {
       title: "Service-Wohnen mit medizinischer Versorgung",
       location: "Berlin-Marzahn",
       category: ["Pflege & Gesundheit", "Neubau", "Berlin"],
       desc: "Integration von Wohnraum und pflegerischen Einrichtungen unter Berücksichtigung hoher funktionaler Anforderungen.",
-      image: "/image2.jpg"
     },
     {
       title: "Wohnungsbau Roelckestraße",
       location: "Berlin-Pankow",
       category: ["Wohnen", "Neubau", "Berlin"],
       desc: "Zeitgemäßer Wohnungsbau mit Fokus auf wirtschaftliche Realisierbarkeit.",
-      image: "/image3.jpg"
     },
     {
       title: "Wohndachkuben Wilhelmsruher Damm",
       location: "Berlin-Reinickendorf",
       category: ["Wohnen", "Bestand", "Berlin"],
       desc: "Aufstockung und Dachausbau zur Verdichtung im urbanen Raum ohne zusätzlichen Flächenverbrauch.",
-      image: "/image4.jpg"
     },
     {
       title: "Ausstellungshalle und Verwaltungszentrum",

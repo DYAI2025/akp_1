@@ -49,8 +49,25 @@ app.use(
   }),
 );
 
-app.get('*', (req, res, next) => {
+function shouldServeSpaFallback(req) {
   if (!req.accepts('html')) {
+    return false;
+  }
+
+  if (req.path.startsWith('/assets/')) {
+    return false;
+  }
+
+  const extension = path.extname(req.path);
+  if (extension && extension !== '.html') {
+    return false;
+  }
+
+  return true;
+}
+
+app.get('*', (req, res, next) => {
+  if (!shouldServeSpaFallback(req)) {
     next();
     return;
   }

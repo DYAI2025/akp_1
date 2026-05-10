@@ -2,21 +2,25 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - master
   pull_request:
 
 jobs:
-  verify:
-    name: Verify frontend and deployment build
+  build-test-deploy-readiness:
+    name: Build, test, and Railway readiness
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
           cache: npm
 
       - name: Install dependencies
@@ -25,11 +29,11 @@ jobs:
       - name: Type-check
         run: npm run lint
 
-      - name: Run tests
+      - name: Run unit and deployment tests
         run: npm test
 
-      - name: Build production assets
+      - name: Build production bundle
         run: npm run build
 
-      - name: Smoke-test Railway server
+      - name: Smoke-test production server
         run: npm run smoke:server

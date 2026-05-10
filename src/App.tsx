@@ -22,7 +22,7 @@ export default function App() {
       <Cursor />
       
       {/* Shell constraints */}
-      <div className="min-h-screen border-8 border-gray-100 max-w-[1600px] mx-auto relative bg-paper flex flex-col">
+      <div id="top" className="min-h-screen border-8 border-gray-100 max-w-[1600px] mx-auto relative bg-paper flex flex-col">
         {/* Design Accents */}
         <div className="fixed top-0 left-0 w-1 h-full bg-olive/10 z-50 pointer-events-none"></div>
         <div className="absolute top-12 right-12 pointer-events-none hidden md:block">

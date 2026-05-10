@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { content } from '@/data/content';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -10,6 +10,7 @@ function getProjectImage(project: Project) {
 
 export default function Portfolio() {
   const [activeFilter, setActiveFilter] = useState("Alle");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   // Extract all unique filters
   const allFilters = ["Alle", ...Array.from(new Set(content.projects.flatMap(p => p.category)))];
@@ -18,7 +19,26 @@ export default function Portfolio() {
     ? content.projects
     : content.projects.filter(p => p.category.includes(activeFilter));
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  useEffect(() => {
+    if (!selectedProject) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedProject(null);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedProject]);
 
   return (
     <section id="projekte" className="py-24 max-w-[1600px] mx-auto border-t border-black/10">
@@ -31,7 +51,9 @@ export default function Portfolio() {
           {allFilters.map(filter => (
             <button
               key={filter}
+              type="button"
               onClick={() => setActiveFilter(filter)}
+              aria-pressed={activeFilter === filter}
               className={`font-sans text-[10px] uppercase tracking-[0.2em] px-4 py-2 transition-all border ${
                 activeFilter === filter
                   ? 'bg-ink text-paper border-ink'
@@ -52,7 +74,8 @@ export default function Portfolio() {
             const isFeatured = index % 5 === 0 && activeFilter === "Alle";
             const projectImage = getProjectImage(project);
             return (
-              <motion.div
+              <motion.button
+                type="button"
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -60,7 +83,8 @@ export default function Portfolio() {
                 transition={{ duration: 0.4 }}
                 key={project.title}
                 onClick={() => setSelectedProject(project)}
-                className={`group cursor-pointer flex flex-col bg-paper transition-all hover:-translate-y-1 ${
+                aria-label={`Details zu ${project.title} öffnen`}
+                className={`group cursor-pointer flex flex-col bg-paper transition-all hover:-translate-y-1 text-left ${
                   isFeatured ? 'md:col-span-2 md:row-span-2' : ''
                 }`}
                 data-cursor="Details"
@@ -108,7 +132,7 @@ export default function Portfolio() {
                      </span>
                   </div>
                 </div>
-              </motion.div>
+              </motion.button>
             );
           })}
         </AnimatePresence>
@@ -123,6 +147,9 @@ export default function Portfolio() {
              exit={{ opacity: 0 }}
              className="fixed inset-0 z-50 flex items-center justify-end p-4 md:p-8 bg-ink/20 backdrop-blur-sm"
              onClick={() => setSelectedProject(null)}
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="project-detail-title"
            >
               <motion.div
                 initial={{ x: '100%' }}
@@ -134,14 +161,16 @@ export default function Portfolio() {
               >
                 <div className="p-8 md:p-12 relative">
                   <button
+                    type="button"
                     onClick={() => setSelectedProject(null)}
                     className="absolute top-8 right-8 font-sans text-xs uppercase tracking-widest"
+                    aria-label="Projekt-Detailansicht schließen"
                   >
                     Schließen
                   </button>
                   <div className="mt-12">
                      <span className="font-sans text-[10px] uppercase tracking-widest text-ink/50 block mb-4">{selectedProject.location}</span>
-                     <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-8">{selectedProject.title}</h2>
+                     <h2 id="project-detail-title" className="font-serif text-3xl md:text-5xl leading-tight mb-8">{selectedProject.title}</h2>
                      <p className="font-sans text-lg text-ink/80 leading-relaxed mb-12">{selectedProject.desc}</p>
 
                      {getProjectImage(selectedProject) ? (

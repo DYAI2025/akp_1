@@ -39,17 +39,33 @@ try {
   if (healthBody.status !== 'ok') {
     throw new Error(`/healthz returned unexpected body: ${JSON.stringify(healthBody)}`);
   }
+  if (health.headers.get('cache-control') !== 'no-store') {
+    throw new Error('/healthz must not be cached by Railway or proxies');
+  }
 
   const root = await fetchWithRetry('/');
   const html = await root.text();
   if (!root.ok || !html.includes('<div id="root"></div>')) {
     throw new Error('Root route did not serve the Vite index.html');
   }
+  if (root.headers.get('cache-control') !== 'no-cache') {
+    throw new Error('index.html must stay uncached so Railway deploys update cleanly');
+  }
+  if (root.headers.get('x-content-type-options') !== 'nosniff') {
+    throw new Error('Security header X-Content-Type-Options is missing');
+  }
 
   const fallback = await fetchWithRetry('/projekt/archiv');
   const fallbackHtml = await fallback.text();
   if (!fallback.ok || !fallbackHtml.includes('<div id="root"></div>')) {
     throw new Error('SPA fallback did not serve index.html');
+  }
+
+  const missingAsset = await fetchWithRetry('/assets/does-not-exist.js', {
+    headers: {accept: 'application/javascript'},
+  });
+  if (missingAsset.status !== 404) {
+    throw new Error(`Missing assets should return 404, got ${missingAsset.status}`);
   }
 } finally {
   server.kill('SIGTERM');

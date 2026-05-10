@@ -6,6 +6,9 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import App from '../App';
 import {content} from '../data/content';
 import Contact from '../components/sections/Contact';
+import Navigation from '../components/Navigation';
+import Portfolio from '../components/sections/Portfolio';
+import Publications from '../components/sections/Publications';
 
 function renderApp() {
   return renderToStaticMarkup(<App />);
@@ -58,4 +61,34 @@ test('contact form remains usable without a backend service', () => {
     assert.match(html, new RegExp(`(id|htmlFor|for)="${fieldId}"`), `missing accessible wiring for ${fieldId}`);
   }
   assert.match(html, /required=""/);
+});
+
+
+test('navigation is available on desktop and mobile and targets valid sections', () => {
+  const html = renderToStaticMarkup(<><Navigation /><App /></>);
+  const hrefs = Array.from(html.matchAll(/href="#([^"]+)"/g)).map(match => match[1]);
+  const ids = new Set(Array.from(html.matchAll(/id="([^"]+)"/g)).map(match => match[1]));
+
+  assert.match(html, /aria-label="Hauptnavigation"/);
+  assert.match(html, /Mobile Abschnittsnavigation/);
+  assert.ok(hrefs.includes('top'), 'logo should link to the top of the page');
+  for (const href of hrefs.filter(Boolean)) {
+    assert.ok(ids.has(href), `navigation href #${href} has no matching section id`);
+  }
+});
+
+test('portfolio controls are accessible for keyboard and assistive technology', () => {
+  const html = renderToStaticMarkup(<Portfolio />);
+
+  assert.match(html, /type="button"/);
+  assert.match(html, /aria-pressed="true"/);
+  assert.match(html, /aria-label="Details zu Pestalozzistraße 45–46 öffnen"/);
+});
+
+test('publication call to action links to a real contact destination', () => {
+  const html = renderToStaticMarkup(<><Publications /><Contact /></>);
+
+  assert.match(html, /href="#kontakt"/);
+  assert.match(html, /Publikationsliste anfragen/);
+  assert.match(html, /id="kontakt"/);
 });

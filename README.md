@@ -19,22 +19,21 @@ The Vite development server listens on `0.0.0.0:3000`.
 ## Quality checks
 
 ```bash
-npm run lint
-npm test
-npm run build
-npm run smoke:server
+npm run ci
 ```
 
-`npm run smoke:server` expects a built `dist/` directory and verifies the production server, the `/healthz` endpoint, and SPA fallback routing.
+The CI command runs type-checking, unit/deployment tests, a production build, and the server smoke test. `npm run smoke:server` expects a built `dist/` directory and verifies the production server, the `/healthz` endpoint, SPA fallback routing, cache headers, security headers, and missing-asset 404 handling.
+
+GitHub Actions runs the same deployment-readiness sequence on pushes and pull requests.
 
 ## Railway deployment
 
-The repository includes `railway.json` with a Nixpacks build and a `/healthz` deployment health check.
+The repository includes `railway.json` with a Nixpacks build and a `/healthz` deployment health check. Node.js is pinned through `package.json` engines and `.node-version` for deterministic Railway and CI builds.
 
 Railway will run:
 
 ```bash
-npm ci && npm run build
+npm ci && npm run ci
 npm run start
 ```
 

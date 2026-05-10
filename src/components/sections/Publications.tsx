@@ -35,9 +35,13 @@ export default function Publications() {
       
       <div className="flex justify-center mt-12">
          {/* Decorative element replacing full list since full list wasn't provided in detail in the prompt */}
-         <button className="font-sans text-[10px] uppercase tracking-widest px-6 py-3 hairline hover:bg-white/50 transition-colors flex items-center gap-2" data-cursor="Öffnen">
-           Alle Veröffentlichungen anzeigen <span className="font-serif text-sm">+</span>
-         </button>
+         <a
+           href="#kontakt"
+           className="font-sans text-[10px] uppercase tracking-widest px-6 py-3 hairline hover:bg-white/50 transition-colors flex items-center gap-2"
+           data-cursor="Anfragen"
+         >
+           Publikationsliste anfragen <span className="font-serif text-sm" aria-hidden="true">+</span>
+         </a>
       </div>
     </section>
   );

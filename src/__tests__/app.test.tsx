@@ -65,7 +65,7 @@ test('contact form remains usable without a backend service', () => {
 
 
 test('navigation is available on desktop and mobile and targets valid sections', () => {
-  const html = renderToStaticMarkup(<><div id="top" /><Navigation /><App /></>);
+  const html = renderToStaticMarkup(<><Navigation /><App /></>);
   const hrefs = Array.from(html.matchAll(/href="#([^"]+)"/g)).map(match => match[1]);
   const ids = new Set(Array.from(html.matchAll(/id="([^"]+)"/g)).map(match => match[1]));
 
